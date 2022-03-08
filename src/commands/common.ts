@@ -4,6 +4,9 @@ import { messages } from "../messages";
 import { CommandAccessLevel } from "../types";
 import { sendPing } from '../activity';
 
+const { CHAT_WHITELIST } = process.env;
+const chatWhitelist = CHAT_WHITELIST ? JSON.parse(CHAT_WHITELIST) : null;
+
 export const startCommand = createCommand(
   /^\/start$/g,
   (regexResult, chatId, msg) => {
@@ -26,7 +29,11 @@ export const chatIdCommand = createCommand(
 export const addChatCommand = createCommand(
   /^\/addchat$/g,
   (regexResult, chatId) => {
-    sendPing(chatId);
+    if (!chatWhitelist || chatWhitelist.includes(chatId)) {
+      sendPing(chatId);
+    } else {
+      botStandalone.sendMessage(chatId, messages.chatIsNotWhitelisted);
+    }
   },
   CommandAccessLevel.ANY,
 );
