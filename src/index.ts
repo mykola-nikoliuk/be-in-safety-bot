@@ -65,7 +65,7 @@ bot.on('message', async (msg: TelegramMessage) => {
   memberActivity(chatId, userId);
 });
 
-schedule.scheduleJob({ hour: 7, minute: 0 }, () => {
+schedule.scheduleJob({ hour: 8, minute: 0 }, () => {
   Object.keys(storage.lastBotMessage).forEach((chatId) => {
     sendPing(+chatId);
   })
