@@ -1,12 +1,10 @@
-import { config } from 'dotenv';
+require('dotenv').config();
 
-config();
-
-import { CallbackCommands, TelegramEventTypes, TelegramMessage } from './types';
+import { CallbackCommands, TelegramEventTypes, TelegramMessage, UserStatus } from './types';
 import { botStandalone } from './classes/botStandalone';
 import { CallbackQuery } from "node-telegram-bot-api";
 import { addChatCommand, chatIdCommand, startCommand } from './commands/common';
-import { storage } from './classes/storage';
+import { storage, storeUserStatus } from './classes/storage';
 import * as schedule from 'node-schedule';
 import { memberActivity, sendPing } from './activity';
 
@@ -51,10 +49,19 @@ bot.on('callback_query', (query: CallbackQuery) => {
   const [command] = data.split(':');
 
   switch (command) {
-    case CallbackCommands.I_AM_ONLINE: {
+    case CallbackCommands.I_AM_ONLINE:
       memberActivity(chatId, userId);
       break;
-    }
+
+    case CallbackCommands.STAY:
+      storeUserStatus(userId, UserStatus.STAY);
+      memberActivity(chatId, userId);
+      break;
+
+    case CallbackCommands.MOVE:
+      storeUserStatus(userId, UserStatus.MOVE);
+      memberActivity(chatId, userId);
+      break;
   }
 });
 

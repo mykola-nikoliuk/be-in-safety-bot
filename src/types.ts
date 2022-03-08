@@ -56,6 +56,8 @@ export enum CommandAccessLevel {
 
 export enum CallbackCommands {
   I_AM_ONLINE = 'imOnline',
+  STAY = 'stay',
+  MOVE = 'move',
 }
 
 export type CommandHandler = (regexResult: RegExpExecArray, chatId: number, message?: TelegramMessage) => void;
@@ -77,4 +79,9 @@ export type ChatMember = {
   },
   status: string,
   is_anonymous: boolean
+}
+
+export enum UserStatus {
+  STAY = 'stay',
+  MOVE = 'move'
 }

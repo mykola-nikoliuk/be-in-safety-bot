@@ -1,3 +1,5 @@
+import { UserStatus } from '../types';
+
 const fs = require('fs');
 const path = require('path');
 
@@ -7,10 +9,12 @@ export const storage: {
   lastUserActivity: Record<string, number>;
   lastBotMessage: Record<string, number>;
   chatMembers: Record<string, number[]>;
+  userStatus: Record<string, UserStatus>;
 } = {
   lastUserActivity: {},
   lastBotMessage: {},
   chatMembers: {},
+  userStatus: {},
 };
 
 load();
@@ -47,5 +51,10 @@ export function storeActivity(chatId: number, userId: number) {
 
 export function storePingMessage(chatId: number, messageId: number) {
   storage.lastBotMessage[chatId] = messageId;
+  save();
+}
+
+export function storeUserStatus(userId: number, status: UserStatus) {
+  storage.userStatus[userId] = status;
   save();
 }

@@ -2,6 +2,7 @@ import { botStandalone } from './classes/botStandalone';
 import { messages } from './messages';
 import { CallbackCommands, ChatMember } from './types';
 import { storage, storeActivity, storePingMessage } from './classes/storage';
+import { UserStatusIcon } from './constants';
 
 const { MEMBER_MAX_UPDATE_PERIOD, IGNORE_USERS = '[]' } = process.env;
 
@@ -21,7 +22,7 @@ async function updatePingMessage(chatId: number) {
         chatId,
         messageText,
         {},
-        [[{ text: messages.imOnline, callback_data: CallbackCommands.I_AM_ONLINE }]],
+        getPingButtons(),
         messageId,
       );
     }
@@ -34,14 +35,26 @@ export async function sendPing(chatId: number) {
   try {
     const messageText = await getPingMessage(chatId);
 
-    const { message_id: messageId } = await botStandalone.sendMessage(chatId, messageText, {},
-      [[{ text: messages.imOnline, callback_data: CallbackCommands.I_AM_ONLINE }]],
+    const { message_id: messageId } = await botStandalone.sendMessage(
+      chatId,
+      messageText,
+      {},
+      getPingButtons(),
     );
     storePingMessage(chatId, messageId);
     botStandalone.pinChatMessage(chatId, messageId);
   } catch (e) {
     console.error(e);
   }
+}
+
+function getPingButtons() {
+  return [
+    [
+      { text: messages.stay, callback_data: CallbackCommands.STAY },
+      { text: messages.move, callback_data: CallbackCommands.MOVE }
+    ]
+  ];
 }
 
 async function getPingMessage(chatId: number) {
@@ -52,14 +65,15 @@ async function getPingMessage(chatId: number) {
   if (okMembers.length) {
     messageText += messages.activeMembers;
     okMembers.forEach((member) => {
-      messageText += `✅ ${member.name}\n`
+      messageText += ['✅', getUserStatus(member.id), member.name, '\n'].filter(v => v).join(' ');
     });
   }
 
   if (notOkMembers.length) {
     messageText += `\n${messages.notActiveMembers}`;
     notOkMembers.forEach((member) => {
-      messageText += `⚠️ ${member.name} (${getHours(member.lastUpdate)})\n`
+      messageText += messageText += ['⚠', getUserStatus(member.id), member.name, getHours(member.lastUpdate), '\n'].filter(v => v)
+        .join(' ');
     });
   }
 
@@ -121,4 +135,9 @@ function getHours(date: number) {
   if (!date) return '-';
   let delta = (Date.now() - date) / 1000 / 60 / 60;
   return delta.toFixed(0) + 'г';
+}
+
+function getUserStatus(userId: number) {
+  const status = storage.userStatus[userId];
+  return status ? UserStatusIcon[status] : '';
 }
