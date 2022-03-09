@@ -123,7 +123,6 @@ async function getMembersGroups(chatId: number) {
   const notOkMembers: ActiveMember[] = [];
 
   sortedMembers.forEach(member => {
-    console.log(+MEMBER_MAX_UPDATE_PERIOD);
     let isMemberActive = Date.now() - member.lastUpdate < +MEMBER_MAX_UPDATE_PERIOD;
     isMemberActive ? okMembers.push(member) : notOkMembers.push(member);
   });
@@ -132,7 +131,7 @@ async function getMembersGroups(chatId: number) {
 }
 
 function getHours(date: number) {
-  if (!date) return '';
+  if (!date) return '(н/д)';
   let delta = (Date.now() - date) / 1000 / 60 / 60;
 
   const hours = delta | 0;
