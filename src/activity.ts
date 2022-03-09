@@ -65,7 +65,7 @@ async function getPingMessage(chatId: number) {
   if (okMembers.length) {
     messageText += messages.activeMembers;
     okMembers.forEach((member) => {
-      messageText += ['✅', getUserStatus(member.id), member.name, '\n'].filter(v => v).join(' ');
+      messageText += ['✅', getUserStatus(member.id), member.name, getHours(member.lastUpdate), '\n'].filter(v => v).join(' ');
     });
   }
 
@@ -132,9 +132,13 @@ async function getMembersGroups(chatId: number) {
 }
 
 function getHours(date: number) {
-  if (!date) return '-';
+  if (!date) return '';
   let delta = (Date.now() - date) / 1000 / 60 / 60;
-  return delta.toFixed(0) + 'г';
+
+  const hours = delta | 0;
+  if (hours === 0) return '';
+
+  return `(${hours}г)`;
 }
 
 function getUserStatus(userId: number) {
