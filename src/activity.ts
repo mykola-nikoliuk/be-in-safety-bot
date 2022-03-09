@@ -65,7 +65,7 @@ async function getPingMessage(chatId: number) {
   if (okMembers.length) {
     messageText += messages.activeMembers;
     okMembers.forEach((member) => {
-      messageText += ['✅', getUserStatus(member.id), member.name, getHours(member.lastUpdate), '\n'].filter(v => v).join(' ');
+      messageText += [getUserStatus(member.id), member.name, getHours(member.lastUpdate), '\n'].filter(v => v).join(' ');
     });
   }
 
