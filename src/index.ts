@@ -79,7 +79,6 @@ schedule.scheduleJob({ rule: '0 50 7 */2 * *' }, () => {
 });
 
 schedule.scheduleJob({ rule: '0 */1 * * * *' }, () => {
-  console.log('update');
   Object.keys(storage.chatMembers).forEach((chatId) => {
     updatePingMessage(+chatId);
   })
