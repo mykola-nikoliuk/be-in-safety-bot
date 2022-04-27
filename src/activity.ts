@@ -12,7 +12,7 @@ export function memberActivity(chatId: number, userId: number) {
   updatePingMessage(chatId);
 }
 
-async function updatePingMessage(chatId: number) {
+export async function updatePingMessage(chatId: number) {
   try {
     const messageText = await getPingMessage(chatId);
     const messageId = storage.lastBotMessage[chatId];
@@ -132,12 +132,17 @@ async function getMembersGroups(chatId: number) {
 
 function getHours(date: number) {
   if (!date) return '(н/д)';
-  let delta = (Date.now() - date) / 1000 / 60 / 60;
 
-  const hours = delta | 0;
-  if (hours === 0) return '';
+  let result = [];
+  const hours = (Date.now() - date) / 1000 / 60 / 60 | 0;
+  const minutes = (Date.now() - date) / 1000 / 60 % 60 | 0;
+  // const seconds = (Date.now() - date) / 1000 % 60 | 0;
 
-  return `(${hours}г)`;
+  if (hours) result.push(`${hours}г`);
+  if (hours || minutes) result.push(`${minutes}хв`);
+  // if (hours || minutes || seconds) result.push(`${seconds}с`);
+
+  return result.length ? `(${result.join(' ')})` : '';
 }
 
 function getUserStatus(userId: number) {

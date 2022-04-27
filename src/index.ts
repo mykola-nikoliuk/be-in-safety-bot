@@ -6,7 +6,7 @@ import { CallbackQuery } from "node-telegram-bot-api";
 import { addChatCommand, chatIdCommand, startCommand } from './commands/common';
 import { storage, storeUserStatus } from './classes/storage';
 import * as schedule from 'node-schedule';
-import { memberActivity, sendPing } from './activity';
+import { memberActivity, sendPing, updatePingMessage } from './activity';
 
 
 process.env.NTBA_FIX_319 = "NTBA_FIX_319";
@@ -72,9 +72,16 @@ bot.on('message', async (msg: TelegramMessage) => {
   memberActivity(chatId, userId);
 });
 
-schedule.scheduleJob({ hour: 8, minute: 0 }, () => {
+schedule.scheduleJob({ rule: '0 50 7 */2 * *' }, () => {
   Object.keys(storage.lastBotMessage).forEach((chatId) => {
     sendPing(+chatId);
+  })
+});
+
+schedule.scheduleJob({ rule: '0 */1 * * * *' }, () => {
+  console.log('update');
+  Object.keys(storage.chatMembers).forEach((chatId) => {
+    updatePingMessage(+chatId);
   })
 });
 
